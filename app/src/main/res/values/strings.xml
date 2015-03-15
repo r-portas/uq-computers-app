@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">UQ Library Computers</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="refresh">Refresh</string>
+
+    <string name="green">#8bc34a</string>
+    <string name="blue">#03a9f4</string>
+    <string name="orange"> #ff5722</string>
+</resources>
