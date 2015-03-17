@@ -15,32 +15,14 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-class MyDialog extends DialogFragment{
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState){
-        final int[] colours = {R.string.blue, R.string.green};
-        String[] options = {"Blue", "Green"};
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Set Colour");
-        builder.setItems(options, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                MainActivity.updateColours(getResources().getString(colours[which]));
-            }
-        });
-        return builder.create();
-    }
-}
 
 public class MainActivity extends ActionBarActivity{
 
@@ -53,9 +35,18 @@ public class MainActivity extends ActionBarActivity{
 
     String url = "https://www.library.uq.edu.au/home-page?qt-homepage_sidebar=2#qt-homepage_sidebar";
 
+    /**
+     * Updates the program's colours
+     * @param colour
+     */
     static public void updateColours(String colour){
         mainColour = colour;
         but.setBackgroundColor(Color.parseColor(colour));
+        int count = lview.getChildCount();
+        for (int i = 0; i < count; i++) {
+            TextView tv = (TextView) lview.getChildAt(i);
+            tv.setTextColor(Color.parseColor(colour));
+        }
     }
 
     @Override
@@ -68,7 +59,8 @@ public class MainActivity extends ActionBarActivity{
         lview = (ListView) findViewById(R.id.listView);
         but = (Button) findViewById(R.id.button);
 
-        runWebscrape(url);
+        //runWebscrape(url);
+        refreshButton(null);
     }
 
     /**
@@ -167,6 +159,10 @@ public class MainActivity extends ActionBarActivity{
         if (id == R.id.action_settings) {
             DialogFragment frag = new MyDialog();
             frag.show(getFragmentManager(), "colour_dialog");
+            return true;
+        } else if (id == R.id.action_about){
+            DialogFragment frag = new AboutDialog();
+            frag.show(getFragmentManager(), "about_dialog");
             return true;
         }
 
