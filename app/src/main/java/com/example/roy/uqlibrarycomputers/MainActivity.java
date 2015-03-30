@@ -1,18 +1,17 @@
 package com.example.roy.uqlibrarycomputers;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.DialogInterface;
+import android.content.Context;
+import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -20,7 +19,12 @@ import android.widget.TextView;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,6 +36,9 @@ public class MainActivity extends ActionBarActivity{
     private Handler mHandler;
 
     static String mainColour;
+
+    Map<String, String> buildings;
+    String fname = "data.txt";
 
     String url = "https://www.library.uq.edu.au/home-page?qt-homepage_sidebar=2#qt-homepage_sidebar";
 
@@ -49,15 +56,40 @@ public class MainActivity extends ActionBarActivity{
         }
     }
 
+    private static void loadLibraryNames(Map<String, String> dest, String fname, Context context){
+        try {
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(context.getResources().getAssets().open(fname))
+            );
+
+            String line = "";
+            while ((line = reader.readLine()) != null){
+                String[] data = line.split(", ");
+                if (data.length == 2){
+                    dest.put(data[0], data[1]);
+                }
+            }
+
+        } catch (Exception e){
+
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         mainColour = getResources().getString(R.string.blue);
 
         lview = (ListView) findViewById(R.id.listView);
         but = (Button) findViewById(R.id.button);
+
+        // Load the names for the library
+        buildings = new HashMap<String, String>();
+        loadLibraryNames(buildings, fname, getApplicationContext());
+        //Log.e("DATA", buildings.toString());
 
         //runWebscrape(url);
         refreshButton(null);
@@ -80,7 +112,8 @@ public class MainActivity extends ActionBarActivity{
      * @return An arraylist of strings that contains formatted data
      */
     private void getFreeComputers(String html){
-        ArrayList<String> data = new ArrayList<String>();
+        ArrayList<String> data = new ArrayList<String>(); //old data class
+        List<LibraryComputer> computers = new ArrayList<LibraryComputer>();
         String matches = "";
         String pattern = "<td class=\"left\">(.*?)</td>";
         String pattern2 = "<td class=\"right\">(.*?)</td>";
@@ -90,16 +123,20 @@ public class MainActivity extends ActionBarActivity{
         Matcher n = p.matcher(html);
 
         while (m.find() && n.find()){
-            matches = String.format("%s:  %s\n", m.group(1), n.group(1));
-            data.add(matches);
+            String libraryName = buildings.get(m.group(1));
+            computers.add(new LibraryComputer(libraryName, n.group(1)));
+            //matches = String.format("%s:  %s\n", m.group(1), n.group(1));
+            //data.add(matches);
         }
 
-        final ArrayList<String> finalData = data;
+        final List<LibraryComputer> finComputers = computers;
+        //final ArrayList<String> finalData = data;
 
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ArrayAdapter adapter = new ArrayAdapter(MainActivity.this, R.layout.custom_layout, finalData);
+                MyAdapter adapter = new MyAdapter(MainActivity.this, finComputers);
+                //ArrayAdapter adapter = new ArrayAdapter(MainActivity.this, R.layout.newlayout, finalData);
                 lview.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
                 //Log.e("INFO", finalData.toString());
@@ -156,11 +193,14 @@ public class MainActivity extends ActionBarActivity{
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+
+        // Get the colour working
+        /*if (id == R.id.action_settings) {
             DialogFragment frag = new MyDialog();
             frag.show(getFragmentManager(), "colour_dialog");
             return true;
-        } else if (id == R.id.action_about){
+        }*/
+        if (id == R.id.action_about){
             DialogFragment frag = new AboutDialog();
             frag.show(getFragmentManager(), "about_dialog");
             return true;

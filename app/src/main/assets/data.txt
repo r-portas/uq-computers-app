@@ -1,0 +1,14 @@
+Arch Music, Architecture & Music Library
+Biol Sci, Biological Sciences Library
+DHEngSci, Dorothy Hill Engineering and Sciences Library
+DuhigStudy, Social Sciences & Humanities Library
+Fryer, Fryer Library
+Gatton, UQ Gatton Library
+GradEcoBus, Graduate Economics and Business Library
+Herston, Herston Health Sciences Library
+Law, Walter Harrison Law Library
+Mater, UQ/Mater McAuley Library
+PACE, PACE Health Sciences Library
+PA Hosp, Princess Alexander Hospital
+PSE, Dorothy Hill PSE Library
+SSAH, Social Sciences & Humanities Library
