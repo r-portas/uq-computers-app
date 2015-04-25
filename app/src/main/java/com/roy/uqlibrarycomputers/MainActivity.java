@@ -1,7 +1,9 @@
-package com.example.roy.uqlibrarycomputers;
+package com.roy.uqlibrarycomputers;
 
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.os.Handler;
@@ -12,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -28,7 +31,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MainActivity extends ActionBarActivity{
+public class MainActivity extends Activity{
 
     // Objects
     static ListView lview;
@@ -36,7 +39,7 @@ public class MainActivity extends ActionBarActivity{
     private Handler mHandler;
 
     static String mainColour;
-
+    private List<LibraryComputer> computers;
     Map<String, String> buildings;
     String fname = "data.txt";
 
@@ -86,6 +89,19 @@ public class MainActivity extends ActionBarActivity{
         lview = (ListView) findViewById(R.id.listView);
         but = (Button) findViewById(R.id.button);
 
+        lview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (computers != null){
+                    //Log.w("Test", computers.get(position).toString());
+                    Intent myIntent = new Intent(getBaseContext(), MapActivity.class);
+                    // Put data here
+
+                    startActivity(myIntent);
+                }
+            }
+        });
+
         // Load the names for the library
         buildings = new HashMap<String, String>();
         loadLibraryNames(buildings, fname, getApplicationContext());
@@ -113,7 +129,7 @@ public class MainActivity extends ActionBarActivity{
      */
     private void getFreeComputers(String html){
         ArrayList<String> data = new ArrayList<String>(); //old data class
-        List<LibraryComputer> computers = new ArrayList<LibraryComputer>();
+        computers = new ArrayList<LibraryComputer>();
         String matches = "";
         String pattern = "<td class=\"left\">(.*?)</td>";
         String pattern2 = "<td class=\"right\">(.*?)</td>";

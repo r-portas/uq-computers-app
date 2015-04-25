@@ -8,4 +8,5 @@
     <string name="green">#8bc34a</string>
     <string name="blue">#03a9f4</string>
     <string name="orange"> #ff5722</string>
+    <string name="title_activity_map">Computer Location</string>
 </resources>

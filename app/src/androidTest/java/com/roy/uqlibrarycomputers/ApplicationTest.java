@@ -1,4 +1,4 @@
-package com.example.roy.uqlibrarycomputers;
+package com.roy.uqlibrarycomputers;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

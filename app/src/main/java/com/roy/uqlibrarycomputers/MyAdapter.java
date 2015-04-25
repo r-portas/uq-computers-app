@@ -1,8 +1,9 @@
-package com.example.roy.uqlibrarycomputers;
+package com.roy.uqlibrarycomputers;
 
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Movie;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,7 @@ public class MyAdapter extends BaseAdapter{
 
     @Override
     public Object getItem(int location){
+        Log.w("TEST", "Clicked " + computers.get(location));
         return computers.get(location);
     }
 
