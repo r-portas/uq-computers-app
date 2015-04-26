@@ -12,13 +12,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.w3c.dom.Text;
 
 public class MapActivity extends Activity{
 
@@ -31,7 +36,12 @@ public class MapActivity extends Activity{
     private LocationManager locationManager;
     private LocationListener locationListener;
 
+    private Marker currentMarker;
+    private Marker targetMarker;
+
     private Button refreshButton;
+    private ProgressBar pbar;
+    private TextView loadingView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +49,10 @@ public class MapActivity extends Activity{
         setContentView(R.layout.activity_map);
 
         refreshButton = (Button) findViewById(R.id.button);
+        pbar = (ProgressBar) findViewById(R.id.progressBar);
+        loadingView = (TextView) findViewById(R.id.textView2);
+
+        pbar.setVisibility(View.VISIBLE);
 
         targetLocation = new Location("");
         targetLocation.setLongitude(153.023);
@@ -51,10 +65,22 @@ public class MapActivity extends Activity{
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                Log.w("Location", "Location Updated: " + location.getLatitude() + " " + location.getLongitude());
+                //Log.w("Location", "Location Updated: " + location.getLatitude() + " " + location.getLongitude());
                 myLocation.setLatitude(location.getLatitude());
                 myLocation.setLongitude(location.getLongitude());
                 myLocation.setSpeed(location.getSpeed());
+
+                pbar.setVisibility(View.GONE);
+                loadingView.setVisibility(View.GONE);
+
+                targetMarker = setupMarker(targetMarker, targetLocation, "Target");
+                currentMarker =  setupMarker(currentMarker, myLocation, "Current Location");
+                try {
+                    mapFragment.getView().setVisibility(View.VISIBLE);
+                } catch (Exception e){
+                    Log.w("Error", "Could not obtain mapFragment view");
+                }
+
             }
 
             @Override
@@ -76,14 +102,21 @@ public class MapActivity extends Activity{
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 
         mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getView().setVisibility(View.INVISIBLE);
         gMap = mapFragment.getMap();
+    }
 
-        // Set markers
-        gMap.addMarker(new MarkerOptions()
-                .position(new LatLng(
-                        myLocation.getLatitude(),
-                        myLocation.getLongitude()))
-                .title("Current Position"));
+    public Marker setupMarker(Marker m, Location l, String title){
+        if (l != null && gMap != null){
+            m = gMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(l.getLatitude(), l.getLongitude()))
+                    .title(title));
+
+            return m;
+        } else {
+            Log.w("ERROR", "Location is null");
+            return null;
+        }
 
     }
 
@@ -92,12 +125,8 @@ public class MapActivity extends Activity{
      * @param view
      */
     public void refreshLocation(View view){
-        gMap.addMarker(new MarkerOptions()
-                .position(new LatLng(
-                        myLocation.getLatitude(),
-                        myLocation.getLongitude()))
-                .title("Current Position"));
-
+        //TODO: Remove does not work as expected
+        targetMarker.setPosition(new LatLng(0, 0));
         Log.w("Location", myLocation.getLatitude() + " " + myLocation.getLongitude());
     }
 
