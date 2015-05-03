@@ -26,7 +26,8 @@
         android:layout_toLeftOf="@+id/progressBar"
         android:layout_toStartOf="@+id/progressBar"
         android:textAlignment="center"
-        android:layout_centerInParent="true" />
+        android:layout_centerInParent="true"
+        android:gravity="center_vertical" />
 
     <Button
         android:layout_width="wrap_content"

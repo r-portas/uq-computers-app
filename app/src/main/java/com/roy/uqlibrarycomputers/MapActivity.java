@@ -16,10 +16,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -42,21 +45,36 @@ public class MapActivity extends Activity{
     private Button refreshButton;
     private ProgressBar pbar;
     private TextView loadingView;
+    private TextView distanceTextView;
+
+    private boolean hasLoadedMap;
+    private boolean hasInitialised;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
+        hasLoadedMap = false;
+        hasInitialised = false;
+
         refreshButton = (Button) findViewById(R.id.button);
         pbar = (ProgressBar) findViewById(R.id.progressBar);
         loadingView = (TextView) findViewById(R.id.textView2);
+        distanceTextView = (TextView) findViewById(R.id.textView);
 
         pbar.setVisibility(View.VISIBLE);
 
         targetLocation = new Location("");
         targetLocation.setLongitude(153.023);
         targetLocation.setLatitude(-27.4709);
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null){
+            LatLng loc = (LatLng) extras.get("location");
+            targetLocation.setLatitude(loc.latitude);
+            targetLocation.setLongitude(loc.longitude);
+        }
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
@@ -72,13 +90,26 @@ public class MapActivity extends Activity{
 
                 pbar.setVisibility(View.GONE);
                 loadingView.setVisibility(View.GONE);
+                if (currentMarker != null){
+                    // Update the user's position each time the location listener
+                    // gets an update
+                    currentMarker.setPosition(getLocationCoordinates(myLocation));
+                    updateDistanceLabel(myLocation, targetLocation);
+                }
 
-                targetMarker = setupMarker(targetMarker, targetLocation, "Target");
-                currentMarker =  setupMarker(currentMarker, myLocation, "Current Location");
-                try {
-                    mapFragment.getView().setVisibility(View.VISIBLE);
-                } catch (Exception e){
-                    Log.w("Error", "Could not obtain mapFragment view");
+
+                if (! hasInitialised) {
+                    try {
+                        mapFragment.getView().setVisibility(View.VISIBLE);
+                        targetMarker = setupMarker(targetMarker, targetLocation, "Target");
+                        currentMarker =  setupMarker(currentMarker, myLocation, "Current Location");
+                        setupMap(gMap, currentMarker, targetMarker);
+                        hasInitialised = true;
+                        hasLoadedMap = true;
+                        updateDistanceLabel(myLocation, targetLocation);
+                    } catch (Exception e) {
+                        Log.w("Error", "Could not obtain mapFragment view");
+                    }
                 }
 
             }
@@ -106,10 +137,44 @@ public class MapActivity extends Activity{
         gMap = mapFragment.getMap();
     }
 
-    public Marker setupMarker(Marker m, Location l, String title){
+    /**
+     * Updates the distance label
+     * @param first First location to compare
+     * @param second Second location to compare
+     */
+    private void updateDistanceLabel(Location first, Location second){
+        float distance = first.distanceTo(second);
+        distanceTextView.setText("Distance: " + distance + "m");
+    }
+
+    /**
+     * Sets up the camera position of the google map object
+     * @param map Google map to set camera of
+     * @param current Current position of the person
+     * @param target Target position of the library
+     */
+    private void setupMap(GoogleMap map, Marker current, Marker target){
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        builder.include(current.getPosition());
+        builder.include(target.getPosition());
+
+        LatLngBounds bounds = builder.build();
+
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 100);
+        map.animateCamera(cu);
+    }
+
+    /**
+     * Creates a new marker on the map
+     * @param m Marker to set
+     * @param l Location of the target
+     * @param title Title of the marker
+     * @return The marker object
+     */
+    private Marker setupMarker(Marker m, Location l, String title){
         if (l != null && gMap != null){
             m = gMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(l.getLatitude(), l.getLongitude()))
+                    .position(getLocationCoordinates(l))
                     .title(title));
 
             return m;
@@ -121,13 +186,23 @@ public class MapActivity extends Activity{
     }
 
     /**
+     * Gets a LatLng representation from a Location
+     * @param l Location to get coords from
+     * @return A new LatLng object
+     */
+    private LatLng getLocationCoordinates(Location l){
+        return new LatLng(l.getLatitude(), l.getLongitude());
+    }
+
+    /**
      * Refresh the location
      * @param view
      */
     public void refreshLocation(View view){
-        //TODO: Remove does not work as expected
-        targetMarker.setPosition(new LatLng(0, 0));
-        Log.w("Location", myLocation.getLatitude() + " " + myLocation.getLongitude());
+        if (hasLoadedMap) {
+            setupMap(gMap, currentMarker, targetMarker);
+            updateDistanceLabel(myLocation, targetLocation);
+        }
     }
 
     @Override

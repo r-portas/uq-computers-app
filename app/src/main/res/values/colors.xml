@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="blue">#03a9f4</color>
+    <color name="textColour">#000000</color>
+    <color name="loadingColour">#B71C1C</color>
+    <color name="lightRed">#F44336</color>
+    <color name="darkRed">#D32F2F</color>
+
+    <!-- Material Design Colours -->
+    <color name="colorPrimary">#F44336</color>
+    <color name="colorPrimaryDark">#D32F2F</color>
+    <color name="colorAccent">#C62828</color>
+
 </resources>

@@ -1,14 +1,14 @@
-Arch Music, Architecture & Music Library
-Biol Sci, Biological Sciences Library
-DHEngSci, Dorothy Hill Engineering and Sciences Library
-DuhigStudy, Social Sciences & Humanities Library
-Fryer, Fryer Library
-Gatton, UQ Gatton Library
-GradEcoBus, Graduate Economics and Business Library
-Herston, Herston Health Sciences Library
-Law, Walter Harrison Law Library
-Mater, UQ/Mater McAuley Library
-PACE, PACE Health Sciences Library
-PA Hosp, Princess Alexander Hospital
-PSE, Dorothy Hill PSE Library
-SSAH, Social Sciences & Humanities Library
+Arch Music, Architecture & Music Library, -27.499119, 153.014632
+Biol Sci, Biological Sciences Library, -27.496867, 153.011393
+DHEngSci, Dorothy Hill Engineering and Sciences Library, -27.500026, 153.013354
+DuhigStudy, Social Sciences & Humanities Library, -27.496595, 153.014354
+Fryer, Fryer Library, -27.496595, 153.014354
+Gatton, UQ Gatton Library, -27.555906, 152.336328
+GradEcoBus, Graduate Economics and Business Library, -27.497487, 153.013275
+Herston, Herston Health Sciences Library, -27.449342, 153.028456
+Law, Walter Harrison Law Library, -27.497008, 153.012831
+Mater, UQ/Mater McAuley Library, -27.487006, 153.027470
+PACE, PACE Health Sciences Library, -27.497487, 153.013275
+PA Hosp, Princess Alexander Hospital, -27.499151, 153.033487
+PSE, Dorothy Hill PSE Library, -27.500026, 153.013354
+SSAH, Social Sciences & Humanities Library, -27.496595, 153.014354

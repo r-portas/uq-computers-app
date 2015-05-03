@@ -2,17 +2,20 @@ package com.roy.uqlibrarycomputers;
 
 import android.location.Location;
 
+import com.google.android.gms.maps.model.LatLng;
+
 /**
  * Created by roy on 30/03/15.
  */
 public class LibraryComputer {
     private String available;
     private String building;
-    private Location location;
+    private LatLng location;
 
-    public LibraryComputer(String building, String available){
+    public LibraryComputer(String building, String available, LatLng location){
         this.building = building;
         this.available = available;
+        this.location = location;
     }
 
     public String getBuilding(){
@@ -23,9 +26,9 @@ public class LibraryComputer {
         return available;
     }
 
-    public Location getLocation() { return location; }
+    public LatLng getLocation() { return location; }
 
     public String toString(){
-        return building + ": " + available;
+        return building + ": " + available + ", at " + location.toString();
     }
 }
